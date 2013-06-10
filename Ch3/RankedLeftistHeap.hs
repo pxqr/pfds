@@ -1,5 +1,5 @@
 {-# LANGUAGE UnicodeSyntax #-}
-module Ch3.Ex1 where
+module Ch3.RankedLeftistHeap where
 
 import Control.Applicative hiding (empty)
 import Data.List as L hiding (insert)
@@ -33,6 +33,15 @@ size :: Heap α → Int
 size  Nil          = 0
 size (Bin _ _ l r) = succ (size l + size r)
 
+
+rank :: Heap α → Rank
+rank  Nil          = 0
+rank (Bin r _ _ _) = r
+
+bin :: α → Heap α → Heap α → Heap α
+bin x l r
+  | rank l >= rank r = Bin (succ (rank l)) x l r
+  |    otherwise     = Bin (succ (rank r)) x r l
 
 merge :: Ord α => Heap α → Heap α → Heap α
 merge Nil h   = h
@@ -81,15 +90,6 @@ merges = head . head . dropWhile ((> 1) . length) . iterate go
     go [x]    = [x]
     go []     = [empty]
 
-rank :: Heap α → Rank
-rank  Nil          = 0
-rank (Bin r _ _ _) = r
-
-bin :: α → Heap α → Heap α → Heap α
-bin x l r
-  | rank l >= rank r = Bin (succ (rank l)) x l r
-  |    otherwise     = Bin (succ (rank r)) x r l
-
 
 instance (Arbitrary α, Ord α) => Arbitrary (Heap α) where
   arbitrary = fromList <$> arbitrary
@@ -106,13 +106,25 @@ prop_rankValid (Bin r _ p q) = and
 
 prop_leftist :: Heap Int → Bool
 prop_leftist  Nil          = True
-prop_leftist (Bin r _ p q) = and
+prop_leftist (Bin _ _ p q) = and
   [ prop_leftist p
   , prop_leftist q
   , rank p >= rank q
   ]
 
-tests = [prop_rankValid, prop_leftist]
+prop_heapOrdered :: Heap Int → Bool
+prop_heapOrdered  Nil          = True
+prop_heapOrdered (Bin _ e p q) = and
+    [ prop_heapOrdered p
+    , prop_heapOrdered q
+    , e `isLess` findMin p
+    , e `isLess` findMin q
+    ]
+  where
+    isLess x = maybe True (x <=)
+
+
+tests = [prop_rankValid, prop_leftist, prop_heapOrdered]
 
 check_all :: IO ()
 check_all = mapM_ quickCheck tests
