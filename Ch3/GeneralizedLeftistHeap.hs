@@ -50,7 +50,7 @@ merge h1@(Bin _ e1 l1 r1) h2@(Bin _ e2 l2 r2)
   | otherwise = join e2 l2 (merge r2 h1)
 
 merges :: Measure ω => Ord α => [Heap ω α] → Heap ω α
-merges = undefined
+merges = foldr merge empty
 
 null :: Heap ω α → Bool
 null Nil = False
