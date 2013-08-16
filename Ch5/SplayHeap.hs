@@ -72,8 +72,9 @@ findMin (Bin p   _ _) = findMin p
 
 deleteMin :: Heap a -> Heap a
 deleteMin  Nil = Nil
-deleteMin (Bin (Bin Nil x b) y c) = Bin b y c
-deleteMin (Bin _ _ _) = undefined
+deleteMin (Bin Nil _ c) = c
+deleteMin (Bin (Bin Nil _ b) y c) = Bin b y c
+deleteMin (Bin (Bin a   x b) y c) = Bin (deleteMin a) x (Bin b y c)
 
 insert :: Ord a => a -> Heap a -> Heap a
 insert x t = Bin sm x bg
