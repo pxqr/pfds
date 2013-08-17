@@ -4,8 +4,8 @@ structures" book.
 ### Index
 
 * Chapther III
-  * [Depth balanced leftist heaps](Ch3/RankedLeftiestHeap.hs)
-  * [Size balanced leftist heaps](Ch3/WeightedLeftiestHeap.hs)
+  * [Depth balanced leftist heaps](Ch3/RankedLeftistHeap.hs)
+  * [Size balanced leftist heaps](Ch3/WeightedLeftistHeap.hs)
 
 ### See also
 
